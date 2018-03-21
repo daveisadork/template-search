@@ -1,8 +1,9 @@
-import React, { Component } from 'react';
-import {Highlighter, Menu, MenuItem, Token, AsyncTypeahead} from 'react-bootstrap-typeahead';
 import 'react-bootstrap-typeahead/css/Typeahead.css';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 import { groupBy, map } from 'lodash';
-import axios from 'axios';
+import {Highlighter, Menu, MenuItem, Token, AsyncTypeahead} from 'react-bootstrap-typeahead';
+
 import './SearchBar.css';
 
 import {
@@ -21,10 +22,6 @@ const MenuDivider = (props) => (
 );
 
 const MenuHeader = (props) => <li {...props} className="dropdown-header" />;
-// const API = 'http://mandrel.docker';
-const API = 'https://api.leadpages.io';
-// const API = 'https://templates.daveisadork.io';
-
 
 const Orders = [
   {
@@ -62,14 +59,6 @@ class SearchBar extends Component {
       dropdownOpen: false,
       order: 'name',
     };
-    this.axios = axios.create({
-      baseURL: `${API}/template/v1`,
-      timeout: 1000,
-      headers: {
-        // 'LP-Security-Token': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJsZWFkcGFnZXMubmV0IiwiaXNzIjoiYXBpLmxlYWRwYWdlcy5pbyIsImFjY2Vzc0lkIjoiSnJFVEdQdGVnYkZjS3JQYm55UmVyYiIsInNlc3Npb25JZCI6IjVQdjVkUmhpWHkyVWFpUW5TdXJTdk0iLCJleHAiOjE1MjM2NTI0OTMsImlhdCI6MTUyMTA2MDQ5M30.16o5kMELO9qRnIOpsVZ83vg4S5HlfrjHY-Y8dBGy8Ng'
-        'LP-Security-Token': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJsZWFkcGFnZXMubmV0IiwiaXNzIjoiYXBpLmxlYWRwYWdlcy5pbyIsImFjY2Vzc0lkIjoiSnJFVEdQdGVnYkZjS3JQYm55UmVyYiIsInNlc3Npb25JZCI6ImpWTHlFRXhjV0p1WjNxVmZEUDc3TDUiLCJleHAiOjE1MjM2NTIwMDIsImlhdCI6MTUyMTA2MDAwMn0.pAC52vzFMnXuptqwcPo2Jaqya21CENgkMXGMe_ntt3I'
-      }
-    });
   }
 
   componentDidMount() {
@@ -78,7 +67,7 @@ class SearchBar extends Component {
 
   async fetchOptions() {
     const url = `/taxonomy?${this.state.query}`;
-    const response = await this.axios.get(url);
+    const response = await this.props.API.get(url);
     this.setState({
       isLoading: false,
       options: response.data.taxons
@@ -208,5 +197,10 @@ class SearchBar extends Component {
     );
   }
 }
+
+SearchBar.propTypes = {
+  API: PropTypes.func.isRequired,
+  onChange: PropTypes.func.isRequired
+};
 
 export default SearchBar;

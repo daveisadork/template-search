@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import TemplateListPagination from './TemplateListPagination'
-import axios from 'axios';
 
 import {
   Card,
@@ -12,24 +11,11 @@ import {
   Row,
 } from 'reactstrap';
 
-// const API = 'http://mandrel.docker';
-const API = 'https://api.leadpages.io';
-// const API = 'https://templates.daveisadork.io';
-//
-
 
 class TemplateList extends Component {
 
   constructor (props) {
     super(props);
-    this.axios = axios.create({
-      baseURL: `${API}/template/v1`,
-      timeout: 1000,
-      headers: {
-        // 'LP-Security-Token': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJsZWFkcGFnZXMubmV0IiwiaXNzIjoiYXBpLmxlYWRwYWdlcy5pbyIsImFjY2Vzc0lkIjoiSnJFVEdQdGVnYkZjS3JQYm55UmVyYiIsInNlc3Npb25JZCI6IjVQdjVkUmhpWHkyVWFpUW5TdXJTdk0iLCJleHAiOjE1MjM2NTI0OTMsImlhdCI6MTUyMTA2MDQ5M30.16o5kMELO9qRnIOpsVZ83vg4S5HlfrjHY-Y8dBGy8Ng'
-        'LP-Security-Token': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJsZWFkcGFnZXMubmV0IiwiaXNzIjoiYXBpLmxlYWRwYWdlcy5pbyIsImFjY2Vzc0lkIjoiSnJFVEdQdGVnYkZjS3JQYm55UmVyYiIsInNlc3Npb25JZCI6ImpWTHlFRXhjV0p1WjNxVmZEUDc3TDUiLCJleHAiOjE1MjM2NTIwMDIsImlhdCI6MTUyMTA2MDAwMn0.pAC52vzFMnXuptqwcPo2Jaqya21CENgkMXGMe_ntt3I'
-      }
-    });
     this.fetchTemplates = this.fetchTemplates.bind(this);
     this.loadPage = this.loadPage.bind(this);
     this.state = {
@@ -57,7 +43,7 @@ class TemplateList extends Component {
 
   async fetchTemplates() {
     const url = `/templates?limit=${this.state.limit}&cursor=${this.state.cursor}&order_by=${this.state.order}&${this.state.query}`;
-    const response = await this.axios.get(url);
+    const response = await this.props.API.get(url);
     const pages = Math.ceil(response.data._meta.total / this.state.limit);
     const currentPage = (this.state.cursor / this.state.limit);
     this.setState({
@@ -105,6 +91,7 @@ class TemplateList extends Component {
 };
 
 TemplateList.propTypes = {
+  API: PropTypes.func.isRequired,
   cursor: PropTypes.number,
   limit: PropTypes.number,
   order: PropTypes.string,
