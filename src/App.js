@@ -1,18 +1,25 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
+import SearchBar from './components/SearchBar'
+import TemplateList from './components/TemplateList'
+
 import './App.css';
 
 class App extends Component {
+  constructor(props) {
+    super(props);
+    this.onSearchChange = this.onSearchChange.bind(this);
+    this.state = {query: '', order: 'name'};
+  }
+
+  onSearchChange(state) {
+    this.setState(state);
+  }
+
   render() {
     return (
       <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h1 className="App-title">Welcome to React</h1>
-        </header>
-        <p className="App-intro">
-          To get started, edit <code>src/App.js</code> and save to reload.
-        </p>
+        <SearchBar onChange={this.onSearchChange}/>
+        <TemplateList query={this.state.query} order={this.state.order}/>
       </div>
     );
   }

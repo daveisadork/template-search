@@ -1,0 +1,20 @@
+.navbar-nav {
+  flex-grow: 1;
+}
+
+.top-nav {
+  flex-direction: row;
+}
+
+.top-nav .rbt {
+  flex-grow: 1;
+}
+
+.top-nav .btn-group {
+  flex-grow: 0;
+}
+
+.rbt-menu {
+  z-index: 5000 !important;
+}
+

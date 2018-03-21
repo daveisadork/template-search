@@ -2,10 +2,22 @@
   "name": "template-search",
   "version": "0.1.0",
   "private": true,
+  "homepage": "https://daveisadork.io/templates/",
   "dependencies": {
-    "react": "^16.2.0",
-    "react-dom": "^16.2.0",
-    "react-scripts": "1.1.1"
+    "axios": "^0.18.0",
+    "bootstrap": "^4.0.0",
+    "eslint": "^4.18.1",
+    "eslint-config-react-app": "^2.1.0",
+    "eslint-loader": "^2.0.0",
+    "eslint-plugin-flowtype": "^2.46.1",
+    "eslint-plugin-import": "^2.9.0",
+    "eslint-plugin-jsx-a11y": "^6.0.3",
+    "eslint-plugin-react": "^7.7.0",
+    "react": "^16.0.0",
+    "react-bootstrap-typeahead": "^2.4.0",
+    "react-dom": "^16.0.0",
+    "react-scripts": "1.1.1",
+    "reactstrap": "^5.0.0-beta.2"
   },
   "scripts": {
     "start": "react-scripts start",
