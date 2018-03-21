@@ -84,8 +84,8 @@ class TemplateList extends Component {
   loadPage(page) {
     const cursor = page * this.state.limit;
     this.setState({
-        currentPage: page,
-        cursor: cursor
+      currentPage: page,
+      cursor: cursor
     }, this.fetchTemplates)
   }
 };
