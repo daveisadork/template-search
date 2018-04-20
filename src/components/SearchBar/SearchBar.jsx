@@ -1,5 +1,5 @@
 import 'react-bootstrap-typeahead/css/Typeahead.css';
-import PropTypes from 'prop-types';
+import { func } from 'prop-types';
 import React, { Component } from 'react';
 import { groupBy, map } from 'lodash';
 import {Highlighter, Menu, MenuItem, Token, AsyncTypeahead} from 'react-bootstrap-typeahead';
@@ -53,7 +53,7 @@ class SearchBar extends Component {
     this.toggle = this.toggle.bind(this);
     this.setOrder = this.setOrder.bind(this);
     this.state = {
-      query: '',
+      query: {},
       options: [],
       isLoading: false,
       dropdownOpen: false,
@@ -66,8 +66,8 @@ class SearchBar extends Component {
   }
 
   async fetchOptions() {
-    const url = `/taxonomy?${this.state.query}`;
-    const response = await this.props.API.get(url);
+    const { query } = this.state;
+    const response = await this.props.API.get('/taxonomy', { params: query });
     this.setState({
       isLoading: false,
       options: response.data.taxons
@@ -76,7 +76,7 @@ class SearchBar extends Component {
 
   onChange(event) {
     const grouped = groupBy(event, (r) => r.type);
-    const items = Object.keys(grouped).sort().map((type) => {
+    const query = Object.keys(grouped).sort().map((type) => {
       let op = "contains";
       if (type === "id") {
         op = "eq";
@@ -87,10 +87,13 @@ class SearchBar extends Component {
         return item.value;
       }).join(",");
 
-      return `${type}[${op}]=${values}`;
-    }).join("&");
-    this.setState({query: items, isLoading: true}, this.fetchOptions);
-    this.props.onChange({query: items});
+      return [`${type}[${op}]`, values];
+    }).reduce((result, item, index, array) => {
+      result[item[0]] = item[1];
+      return result;
+    }, {});
+    this.setState({query, isLoading: true}, this.fetchOptions);
+    this.props.onChange({query});
   }
 
   onSearch(event) {this.setState({})};
@@ -112,7 +115,6 @@ class SearchBar extends Component {
         <Container fluid={false}>
           <Nav fill={true} navbar={true} className="top-nav">
             <AsyncTypeahead
-              autoFocus={true}
               bodyContainer={true}
               bsSize='large'
               minLength={0}
@@ -199,8 +201,8 @@ class SearchBar extends Component {
 }
 
 SearchBar.propTypes = {
-  API: PropTypes.func.isRequired,
-  onChange: PropTypes.func.isRequired
+  API: func.isRequired,
+  onChange: func.isRequired
 };
 
 export default SearchBar;

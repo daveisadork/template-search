@@ -1,33 +1,24 @@
-import PropTypes from 'prop-types';
+import { bool, func, number, shape, string } from 'prop-types';
 import React, { Component } from 'react';
-import TemplateListPagination from './TemplateListPagination'
+import { Container } from 'reactstrap';
 
-import {
-  Card,
-  CardFooter,
-  CardImg,
-  Col,
-  Container,
-  Row,
-} from 'reactstrap';
-
+import TemplateListItem from './TemplateListItem';
+import TemplateListPagination from './TemplateListPagination';
+import './TemplateList.css';
 
 class TemplateList extends Component {
-
-  constructor (props) {
+  constructor(props) {
     super(props);
     this.fetchTemplates = this.fetchTemplates.bind(this);
     this.loadPage = this.loadPage.bind(this);
     this.state = {
-      query: props.query,
+      currentPage: 0,
       cursor: props.cursor,
       limit: props.limit,
       order: props.order,
-      templates: [],
-      currentPage: 0,
       pages: 1,
-      total: 0,
-      count: 0,
+      query: props.query,
+      templates: [],
     };
   }
 
@@ -37,72 +28,73 @@ class TemplateList extends Component {
 
   componentWillReceiveProps(nextProps) {
     if (!nextProps.skipFetch) {
-      this.setState(nextProps, this.fetchTemplates)
+      this.setState(nextProps, this.fetchTemplates);
     }
   }
 
   async fetchTemplates() {
-    const url = `/templates?limit=${this.state.limit}&cursor=${this.state.cursor}&order_by=${this.state.order}&${this.state.query}`;
-    const response = await this.props.API.get(url);
+    const params = {
+      limit: this.state.limit,
+      cursor: this.state.cursor,
+      order_by: this.state.order,
+      ...this.state.query,
+    };
+    const response = await this.props.API.get('/templates', { params });
     const pages = Math.ceil(response.data._meta.total / this.state.limit);
     const currentPage = (this.state.cursor / this.state.limit);
     this.setState({
-      templates: response.data._items,
-      total: response.data._meta.total,
-      count: response.data._meta.count,
-      skipFetch: true,
       currentPage,
       pages,
+      skipFetch: true, // eslint-disable-line
+      templates: response.data._items,
     });
-  }
-
-  render() {
-    return (
-      <div className="my-5 py-4">
-        <Container fluid={false}>
-          <Row>
-            {this.state.templates.map((template) => {
-              return <Col className="col-lg-3 col-md-4 col-sm-6 col-xs-12 mb-4" key={template._meta.id}>
-                <Card>
-                  <CardImg top src={template.thumbnailUrl} />
-                  <CardFooter className="text-truncate">{template.name}</CardFooter>
-                </Card>
-              </Col>
-            })}
-          </Row>
-        </Container>
-        <TemplateListPagination
-          pages={this.state.pages}
-          currentPage={this.state.currentPage}
-          onChange={this.loadPage}
-          preventDefault
-        />
-      </div>
-    );
   }
 
   loadPage(page) {
     const cursor = page * this.state.limit;
     this.setState({
       currentPage: page,
-      cursor: cursor
-    }, this.fetchTemplates)
+      cursor,
+    }, this.fetchTemplates);
   }
-};
+
+  render() {
+    return (
+      <Container>
+        <div className="template-list">
+          {this.state.templates.map(template => (
+            <TemplateListItem template={template} key={template._meta.id} />
+          ))}
+          {Array(this.state.templates.length % 3).fill().map((x, i) => i).map(key => (
+            <div className="template-list-item" key={key} />
+          ))}
+        </div>
+        <TemplateListPagination
+          currentPage={this.state.currentPage}
+          onChange={this.loadPage}
+          pages={this.state.pages}
+          preventDefault
+        />
+      </Container>
+    );
+  }
+}
 
 TemplateList.propTypes = {
-  API: PropTypes.func.isRequired,
-  cursor: PropTypes.number,
-  limit: PropTypes.number,
-  order: PropTypes.string,
-  query: PropTypes.string,
+  API: func.isRequired,
+  cursor: number,
+  limit: number,
+  order: string,
+  query: shape({}),
+  skipFetch: bool,
 };
 
 TemplateList.defaultProps = {
   cursor: 0,
-  limit: 20,
+  limit: 12,
   order: 'name',
-  query: '',
-}
+  query: {},
+  skipFetch: false,
+};
 
 export default TemplateList;

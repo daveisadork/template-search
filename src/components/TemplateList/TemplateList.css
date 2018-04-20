@@ -1,0 +1,9 @@
+.template-list {
+  margin-top: 60px;
+  margin-bottom: 72px;
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  align-content: stretch;
+  justify-content: space-between;
+}
